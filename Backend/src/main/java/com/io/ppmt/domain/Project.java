@@ -18,8 +18,8 @@ public class Project {
     @NotBlank(message = "Project name is required")
     private String projectName;
     @NotBlank(message = "project Identifier  is required")
-    @Size(min=4,max = 5, message="Please use 4 to 5 characters")
-    @Column(updatable = false, unique = true)
+    @Size(min=4, max = 5, message="Please use 4 to 5 characters")
+    @Column(updatable = false, unique = true) //database layer validation we can't catch in FieldError
     private String projectIdentifier;
     @NotBlank(message = "Project description is required")
     private  String description;
@@ -117,17 +117,5 @@ public class Project {
         this.updated_At = updated_At;
     }
 
-    @Override
-    public String toString() {
-        return "Project{" +
-                "id=" + id +
-                ", projectName='" + projectName + '\'' +
-                ", projectIdentifier='" + projectIdentifier + '\'' +
-                ", description='" + description + '\'' +
-                ", start_date=" + start_date +
-                ", end_date=" + end_date +
-                ", created_At=" + created_At +
-                ", updated_At=" + updated_At +
-                '}';
-    }
+
 }
