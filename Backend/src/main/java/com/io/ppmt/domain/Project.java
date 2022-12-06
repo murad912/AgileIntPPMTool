@@ -11,19 +11,18 @@ import java.util.Date;
 
 @Entity
 public class Project {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
     private Long id;
     @NotBlank(message = "Project name is required")
     private String projectName;
-    @NotBlank(message = "project Identifier  is required")
-    @Size(min=4, max = 5, message="Please use 4 to 5 characters")
-    @Column(updatable = false, unique = true) //database layer validation we can't catch in FieldError
+    @NotBlank(message ="Project Identifier is required")
+    @Size(min=4, max=5, message = "Please use 4 to 5 characters")
+    @Column(updatable = false, unique = true)
     private String projectIdentifier;
     @NotBlank(message = "Project description is required")
-    private  String description;
-
+    private String description;
     @JsonFormat(pattern = "yyyy-mm-dd")
     private Date start_date;
     @JsonFormat(pattern = "yyyy-mm-dd")
@@ -34,26 +33,13 @@ public class Project {
     @JsonFormat(pattern = "yyyy-mm-dd")
     private Date updated_At;
 
-    @PrePersist
-    protected  void onCreate(){
-        this.created_At = new Date();
-    }
-    @PreUpdate
-    protected  void onUpdate(){
-        this.updated_At = new Date();
-    }
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "project")
+    //cascade implies Project is a main and Backlog become child change project affect the child -> changing child doesn't affect Parent
+    private Backlog backlog;
 
     public Project() {
     }
-    public Project(String projectName, String projectIdentifier, String description, Date start_date, Date end_date, Date created_At, Date updated_At) {
-        this.projectName = projectName;
-        this.projectIdentifier = projectIdentifier;
-        this.description = description;
-        this.start_date = start_date;
-        this.end_date = end_date;
-        this.created_At = created_At;
-        this.updated_At = updated_At;
-    }
+
     public Long getId() {
         return id;
     }
@@ -118,5 +104,22 @@ public class Project {
         this.updated_At = updated_At;
     }
 
+    public Backlog getBacklog() {
+        return backlog;
+    }
+
+    public void setBacklog(Backlog backlog) {
+        this.backlog = backlog;
+    }
+
+    @PrePersist
+    protected void onCreate(){
+        this.created_At = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate(){
+        this.updated_At = new Date();
+    }
 
 }
