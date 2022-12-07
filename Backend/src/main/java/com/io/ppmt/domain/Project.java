@@ -3,6 +3,7 @@ package com.io.ppmt.domain;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -35,6 +36,7 @@ public class Project {
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "project")
     //cascade implies Project is a main and Backlog become child change project affect the child -> changing child doesn't affect Parent
+    @JsonIgnore
     private Backlog backlog;
 
     public Project() {

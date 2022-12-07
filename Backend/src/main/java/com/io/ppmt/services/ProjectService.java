@@ -25,8 +25,6 @@ public class ProjectService {
         try{
             project.setProjectIdentifier(project.getProjectIdentifier().toUpperCase());
 
-            //if the ID is null it means we are sending new post request to save in db because id generated automatically
-            //if project.id is not null it means data come back to update in this time id is not null it has generated id
             if(project.getId()==null){
                 Backlog backlog = new Backlog();
                 project.setBacklog(backlog);
