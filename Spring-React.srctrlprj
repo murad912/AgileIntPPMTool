@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<config>
+    <source_groups>
+        <source_group_8cecdedf-e61f-41d6-bbac-2190ca54302f>
+            <java_standard>15</java_standard>
+            <maven>
+                <project_file_path>Backend/pom.xml</project_file_path>
+                <should_index_tests>0</should_index_tests>
+            </maven>
+            <name>Java Source Group from Maven</name>
+            <source_extensions>
+                <source_extension>.java</source_extension>
+            </source_extensions>
+            <status>enabled</status>
+            <type>Java Source Group from Maven</type>
+        </source_group_8cecdedf-e61f-41d6-bbac-2190ca54302f>
+        <source_group_a5eb8eb3-ab5b-4969-a072-79112c0df3a4>
+            <java_standard>15</java_standard>
+            <maven>
+                <project_file_path>Backend/pom.xml</project_file_path>
+                <should_index_tests>0</should_index_tests>
+            </maven>
+            <name>Java Source Group from Maven</name>
+            <source_extensions>
+                <source_extension>.java</source_extension>
+            </source_extensions>
+            <status>enabled</status>
+            <type>Java Source Group from Maven</type>
+        </source_group_a5eb8eb3-ab5b-4969-a072-79112c0df3a4>
+    </source_groups>
+    <version>8</version>
+</config>
