@@ -117,10 +117,12 @@ class AddProjectTask extends Component {
       this.setState({ errors: nextProps.errors });
     }
   }
-  // on change
+
+  // on change/
   onChange(e) {
     this.setState({ [e.target.name]: e.target.value });
   }
+
   //on submit
   onSubmit(e) {
     e.preventDefault();
@@ -132,6 +134,8 @@ class AddProjectTask extends Component {
       priority: this.state.priority,
       dueDate: this.state.dueDate,
     };
+	
+	//to the backlogAction.js/POST method
     this.props.addProjectTask(
       this.state.projectIdentifier,
       newTask,

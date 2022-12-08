@@ -26,7 +26,7 @@ public class ProjectTask {
     @JsonIgnore
     private Backlog backlog;
 
-    @Column(updatable = false)
+    @Column(updatable = false, unique = true)
     private String projectIdentifier;
     private Date create_At;
     private Date update_At;
