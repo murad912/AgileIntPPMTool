@@ -1,92 +1,3 @@
-This is Udemy Full-Stack Course (Project Management system)
-
-This Project Include The following tools.
--Spring Boot 
--React-Redux
--MySQL
-
-
-FRONT-ELEMENT
-->I installed npm install bootstrap
--> import "bootstrap/dist/css/bootstrap.min.css"; App.js
-Note:- in bootstrap
-->use  <ul className="navbar-nav ms-auto"> to push text to the right old code is ->  <ul className="navbar-nav ml-auto">
-
--> copy and past font awesome in public/index.html
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ"
-    crossorigin="anonymous">
-  <title>PPM Tool</title>
-	* font awesome help to display an icon on the page 
--> Install Router and import it in App.js
-	npm install react-router-dom
-	import { BrowserRouter as Router, Route } from "react-router-dom";
-
-Note: I install the Javascript plugin. this plugin will create a class component automatically when I type crr + tab
-	import React, { Component } from 'react'
-
-	export default class CreateProjectButton extends Component {
-  		render() {
-  		  return (
-      		<div>
-        
-     			 </div>
-   			 )
- 		 }
-	}
-Note:- Router version 6 has a complex to route so I installed version 5
-	npm install react-router-dom@5.3.0
-	npm i react-router-dom@4.3.1 (This is good for the old route)
-
-Note: I upgraded react-script version 2 to version 5.0.1 this solved npm start issue
-
-Note: I Changed index.js code 
-		root.render(
-  			<BrowserRouter>
-    				<App />
-  			</BrowserRouter>
-			);
-Note: I install Redux and React-Redux-thunk And Axios for spring integration
-	npm i redux react-redux-thunk  //react-redux-thunk is not working so I installed redux-thunk
-	npm i axios
-	npm i react-redux
-Note: I installed npm i classnames to customize the error message  
-	import classnames from "classnames";
-************************************************************************************************************************************************
-												STEP- To connect Database and react/POST-API
-0) 	action/type.js **************************************************************************************************************************
-	export const GET_ERRORS = "GET_ERRORS";
-	export const GET_PROJECTS = "GET_PROJECTS";
-	export const GET_PROJECT = "GET_PROJECT";
-	export const DELETE_PROJECT = "DELETE_PROJECT";
-
-	//Types for BACKLOG ACTIONS ->Focus Here
-	export const GET_BACKLOG = "GET_BACKLOG";
-	export const GET_PROJECT_TASK = "GET_PROJECT_TASK";
-	export const DELETE_PROJECT_TASK = "DELETE_PROJECT_TASK";
-
-1) action/backlogAction.js ********************************************************************************************************************
-import axios from "axios";  //need to install
-import { GET_ERRORS,GET_BACKLOG,GET_PROJECT_TASK,DELETE_PROJECT_TASK, } from "./types";
-
-	export const addProjectTask = (backlog_id, project_task, history) => async (dispatch) => {
-    // await axios.post(`/api/backlog/${backlog_id}`, project_task);
-    // history.push(`/projectBoard/${backlog_id}`);
-    try {
-      await axios.post(`http://localhost:8085/api/backlog/${backlog_id}`, project_task); //this come from spring backlog API
-      history.push(`/projectBoard/${backlog_id}`);
-      dispatch({
-        type: GET_ERRORS,
-        payload: {},
-      });
-    } catch (err) {
-      dispatch({
-        type: GET_ERRORS,
-        payload: err.response.data,
-      });
-    }
-  };
-
-3) AddProjectTask/AddProjectTask.js ***********************************************************************************************************
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
@@ -95,9 +6,9 @@ import { addProjectTask } from "../../../actions/backlogActions";
 import PropTypes from "prop-types";
 
 class AddProjectTask extends Component {
-  constructor(props) { // we pass props becose we send id to the backend
+  constructor(props) {
     super(props);
-    const { id } = this.props.match.params; //parameter in the props are here
+    const { id } = this.props.match.params;
 
     this.state = {
       summary: "",
