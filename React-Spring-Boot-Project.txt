@@ -51,6 +51,8 @@ Note: I install Redux and React-Redux-thunk And Axios for spring integration
 	npm i react-redux
 Note: I installed npm i classnames to customize the error message  
 	import classnames from "classnames";
+
+Note: I installed npm install jwt-decode
 ************************************************************************************************************************************************
 												STEP- To connect Database and react/POST-API
 0) 	action/type.js **************************************************************************************************************************
@@ -134,14 +136,39 @@ class AddProjectTask extends Component {
       priority: this.state.priority,
       dueDate: this.state.dueDate,
     };
-	
-	//to the backlogAction.js/POST method
-    this.props.addProjectTask(
+
+	//to the backlogAction.js/POST method /pass backlog id
+    this.props.addProjectTask(   
       this.state.projectIdentifier,
       newTask,
       this.props.history
     );
   }
+*********************backlogActions.js********************************
+import axios from "axios";
+import { GET_ERRORS } from "./types";
+
+export const addProjectTask =                                        *
+  (backlog_id, project_task, history) => async (dispatch) => {       *
+ /*   try {      */    
+                                                   *
+      await axios.post(`/api/backlog/${backlog_id}`, project_task);  *
+      history.push(`/projectBoard/${backlog_id}`);  
+
+	  //adding error reducer to extract error from the state                 *
+/*      dispatch({                                                     *
+        type: GET_ERRORS,                                            *
+        payload: {},                                                 *
+      });                                                            *
+    } catch (err) {                                                  *
+      dispatch({                                                     *
+        type: GET_ERRORS,                                            *
+        payload: err.response.data,                                  *
+      });                                                            *
+    }     */                                                           *
+  };                                                                 *
+**********************************************************************
+
   render() {
     const { id } = this.props.match.params;
 
@@ -241,3 +268,240 @@ const mapStateToProps = (state) => ({
   errors: state.errors,
 });
 export default connect(mapStateToProps, { addProjectTask })(AddProjectTask);
+
+4) Backlog.js *********************************************************************************************************************
+//help to display Task Status in card/TO_DO/INPROGRESS/DONE
+import React, { Component } from "react";
+import ProjectTask from "./ProjectTasks/ProjectTask";
+
+class Backlog extends Component {
+  render() {
+    const { project_tasks_prop } = this.props;
+
+    const tasks = project_tasks_prop.map((project_task) => (
+      <ProjectTask key={project_task.id} project_task={project_task} />
+    ));
+
+    let todoItems = [];
+    let inProgressItems = [];
+    let doneItems = [];
+
+    for (let i = 0; i < tasks.length; i++) {
+      if (tasks[i].props.project_task.status === "TO_DO") {
+        todoItems.push(tasks[i]);
+      }
+//load Three  indivisual list based on the status(to_do/InProgress/Done)
+//Below logic checks ProjectTask option value
+      if (tasks[i].props.project_task.status === "IN_PROGRESS") {
+        inProgressItems.push(tasks[i]);
+      }
+
+      if (tasks[i].props.project_task.status === "DONE") {
+        doneItems.push(tasks[i]);
+      }
+    }
+    return (
+      <div className="container">
+        <div className="row">
+          <div className="col-md-4">
+            <div className="card text-center mb-2">
+              <div className="card-header bg-secondary text-white">
+                <h3>TO DO</h3>
+              </div>
+            </div>
+            {todoItems}
+            {
+              // insert tasks here
+            }
+          </div>
+          <div className="col-md-4">
+            <div className="card text-center mb-2">
+              <div className="card-header bg-primary text-white">
+                <h3>In Progress</h3>
+              </div>
+            </div>
+            {inProgressItems}
+          </div>
+          <div className="col-md-4">
+            <div className="card text-center mb-2">
+              <div className="card-header bg-success text-white">
+                <h3>Done</h3>
+              </div>
+            </div>
+            {doneItems}
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
+
+export default Backlog;
+
+5) backlogAction.js ***************************************************************************************************************************
+//To get all backlog list and display in the add field 
+
+export const getBacklog = (backlog_id) => async (dispatch) => {
+  try {
+    const res = await axios.get(`/api/backlog/${backlog_id}`);
+    dispatch({
+      type: GET_BACKLOG,
+      payload: res.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: GET_ERRORS,
+      payload: err.response.data,
+    });
+  }
+};
+
+7) ProjectBoard.js *****************************************************************************************************************************
+//Help to redirect projectTask after cheking if is there any existing task
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import Backlog from "./Backlog";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { getBacklog } from "../../actions/backlogActions";
+
+class ProjectBoard extends Component {
+  //constructor to handle errors
+  constructor() {
+    super();
+    this.state = {
+      errors: {},
+    };
+  }
+  componentDidMount() {
+    const { id } = this.props.match.params;
+    this.props.getBacklog(id);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.errors) {
+      this.setState({ errors: nextProps.errors });
+    }
+  }
+  render() {
+    const { id } = this.props.match.params;
+    const { project_tasks } = this.props.backlog;
+    const { errors } = this.state;
+
+    let BoardContent;
+
+    const boardAlgorithm = (errors, project_tasks) => {
+      if (project_tasks.length < 1) {
+        if (errors.projectNotFound) {
+          return (
+            <div className="alert alert-danger text-center" role="alert">
+              {errors.projectNotFound}
+            </div>
+          );
+        } else {
+          return (
+            <div className="alert alert-info text-center" role="alert">
+              No Project Tasks on this board
+            </div>
+          );
+        }
+      } else {
+        return <Backlog project_tasks_prop={project_tasks} />;
+      }
+    };
+
+    BoardContent = boardAlgorithm(errors, project_tasks);
+
+    return (
+      <div className="container">
+        <Link to={`/addProjectTask/${id}`} className="btn btn-primary mb-3">
+          <i className="fas fa-plus-circle"> Create Project Task</i>
+        </Link>
+        <br />
+        <hr />
+        {BoardContent}
+      </div>
+    );
+  }
+}
+
+ProjectBoard.propTypes = {
+  backlog: PropTypes.object.isRequired,
+  getBacklog: PropTypes.func.isRequired,
+  errors: PropTypes.object.isRequired,
+};
+
+const mapStateToProps = (state) => ({
+  backlog: state.backlog,
+  errors: state.errors,
+});
+
+export default connect(mapStateToProps, { getBacklog })(ProjectBoard);
+
+8) ProjectTask.js ******************************************************************************************************************************
+//Checks proority based on value
+//include linke to update/delete or view 
+
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import { deleteProjectTask } from "../../../actions/backlogActions";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+
+class ProjectTask extends Component {
+  onDeleteClick(backlog_id, pt_id) {
+    this.props.deleteProjectTask(backlog_id, pt_id);
+  }
+  render() {
+    const { project_task } = this.props;
+    let priorityString;
+    let priorityClass;
+    if (project_task.priority === 1) {
+      priorityClass = "bg-danger text-light";
+      priorityString = "HIGH";
+    }
+    if (project_task.priority === 2) {
+      priorityClass = "bg-warning text-light";
+      priorityString = "MEDIUM";
+    }
+    if (project_task.priority === 3) {
+      priorityClass = "bg-info text-light";
+      priorityString = "LOW";
+    }
+    return (
+      <div className="card mb-1 bg-light">
+        <div className={`card-header text-primary ${priorityClass}`}>
+          ID: {project_task.projectSequence} -- Priority: {priorityString}
+        </div>
+        <div className="card-body bg-light">
+          <h5 className="card-title">{project_task.summary}</h5>
+          <p className="card-text text-truncate ">
+            {project_task.acceptanceCriteria}
+          </p>
+
+          <Link
+            to={`/updateProjectTask/${project_task.projectIdentifier}/${project_task.projectSequence}`}
+            className="btn btn-primary"
+          >
+            View / Update
+          </Link>
+
+          <button
+            className="btn btn-danger ml-4"
+            onClick={this.onDeleteClick.bind(
+              this,
+              project_task.projectIdentifier,
+              project_task.projectSequence
+            )}
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    );
+  }
+}
+ProjectTask.propTypes = {
+  deleteProjectTask: PropTypes.func.isRequired,
+};
+export default connect(null, { deleteProjectTask })(ProjectTask);

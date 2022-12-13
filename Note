@@ -1,0 +1,38 @@
+Security Implimentation Step /Token based Authentication with Spring Security & JWT
+This Implementation is updated need some modification for future use
+In Token Authentication a server doesn't hold a session that why we are using token stateless
+
+1) Add Dependency
+        dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.8.5</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.0</version>
+		</dependency>
+
+2) SecurityConfig.java
+//we enable the below extension incase we need for future for example if we need to develop thymeleaf
+                .antMatchers(
+                        "/",
+                        "/favicon.ico",
+                        "/**/*.png",
+                        "/**/*.gif",
+                        "/**/*.svg",
+                        "/**/*.jpg",
+                        "/**/*.html",
+                        "/**/*.css",
+                        "/**/*.js"
+                ).permitAll()
+
+3)JwtAuthenticationEntryPoint.java
+
+
+4) InvalidLoginResponse.java
